@@ -4,12 +4,23 @@ const router = express.Router()
 const db = require('../../models')
 const Todo = db.Todo
 
+const limit = 10
+
 router.get('/', (req, res, next) => {
+	const page = parseInt(req.query.page) || 1
+	const begin = (page - 1) * limit
+	const end = page * limit
+
 	return Todo.findAll({
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todos) => res.render('todos', { todos }))
+		.then((todos) => res.render('todos', {
+			todos: todos.slice(begin, end),
+			page,
+			next: page + 1,
+			prev: page > 1 ? page - 1 : page
+		}))
         .catch(next)
 })
 
