@@ -34,8 +34,12 @@ app.get('/todos', (req, res) => {
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todos) => res.render('todos', { todos, message: req.flash('success') }))
-		.catch((err) => res.status(422).json(err))
+		.then((todos) => res.render('todos', { todos, message: req.flash('success'), error: req.flash('error') }))
+		.catch((err) => {
+			console.log(err)
+			req.flash('error', '處理失敗')
+			res.redirect('back')
+		})
 })
 
 app.get('/todos/new', (req, res) => {
@@ -50,7 +54,11 @@ app.post('/todos', (req, res) => {
 			req.flash('success', '建立成功!')
 			res.redirect('/todos')
 		})
-		.catch((err) => console.log(err))
+		.catch((err) => {
+			console.log(err)
+			req.flash('error', '處理失敗')
+			res.redirect('back')
+		})
 })
 
 app.get('/todos/:id', (req, res) => {
@@ -60,8 +68,12 @@ app.get('/todos/:id', (req, res) => {
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todo) => res.render('todo', { todo, message: req.flash('success') }))
-		.catch((err) => console.log(err))
+		.then((todo) => res.render('todo', { todo, message: req.flash('success'), error: req.flash('error') }))
+		.catch((err) => {
+			console.log(err)
+			req.flash('error', '處理失敗')
+			res.redirect('back')
+		})
 })
 
 app.get('/todos/:id/edit', (req, res) => {
@@ -71,14 +83,17 @@ app.get('/todos/:id/edit', (req, res) => {
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todo) => res.render('edit', { todo }))
-		.catch((err) => console.log(err))
+		.then((todo) => res.render('edit', { todo, error: req.flash('error') }))
+		.catch((err) => {
+			console.log(err)
+			req.flash('error', '處理失敗')
+			res.redirect('back')
+		})
 })
 
 app.put('/todos/:id', (req, res) => {
 	const id = req.params.id
 	const { name, isComplete } = req.body
-	console.log(isComplete === 'completed')
 
 	return Todo.update({
 		name,
@@ -89,7 +104,11 @@ app.put('/todos/:id', (req, res) => {
 			req.flash('success', '更新成功!')
 			res.redirect(`/todos/${id}`)
 		})
-		.catch((err) => console.log(err))
+		.catch((err) => {
+			console.log(err)
+			req.flash('error', '處理失敗')
+			res.redirect('back')
+		})
 })
 
 app.delete('/todos/:id', (req, res) => {
@@ -100,7 +119,11 @@ app.delete('/todos/:id', (req, res) => {
 			req.flash('success', '刪除成功!')
 			res.redirect('/todos')
 		})
-		.catch((err) => console.log(err))
+		.catch((err) => {
+			console.log(err)
+			req.flash('error', '處理失敗')
+			res.redirect('back')
+		})
 })
 
 app.listen(port, () => {
