@@ -4,20 +4,16 @@ const router = express.Router()
 const db = require('../../models')
 const Todo = db.Todo
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
 	return Todo.findAll({
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todos) => res.render('todos', { todos, message: req.flash('success'), error: req.flash('error') }))
-		.catch((err) => {
-			console.log(err)
-			req.flash('error', '處理失敗')
-			res.redirect('back')
-		})
+		.then((todos) => res.render('todos', { todos }))
+        .catch(next)
 })
 
-router.get('/new', (req, res) => {
+router.get('/new', (req, res, next) => {
 	return res.render('new')
 })
 
@@ -26,47 +22,35 @@ router.post('/', (req, res) => {
 	
 	return Todo.create({ name })
 		.then(() => {
-			req.flash('success', '建立成功!')
+			req.flash('success_msg', '建立成功!')
 			res.redirect('/todos')
 		})
-		.catch((err) => {
-			console.log(err)
-			req.flash('error', '處理失敗')
-			res.redirect('back')
-		})
+        .catch(next)
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
 	const id = req.params.id
 
 	return Todo.findByPk(id, {
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todo) => res.render('todo', { todo, message: req.flash('success'), error: req.flash('error') }))
-		.catch((err) => {
-			console.log(err)
-			req.flash('error', '處理失敗')
-			res.redirect('back')
-		})
+		.then((todo) => res.render('todo', { todo }))
+        .catch(next)
 })
 
-router.get('/:id/edit', (req, res) => {
+router.get('/:id/edit', (req, res, next) => {
 	const id = req.params.id
 
 	return Todo.findByPk(id, {
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todo) => res.render('edit', { todo, error: req.flash('error') }))
-		.catch((err) => {
-			console.log(err)
-			req.flash('error', '處理失敗')
-			res.redirect('back')
-		})
+		.then((todo) => res.render('edit', { todo }))
+        .catch(next)
 })
 
-router.put('/:id', (req, res) => {
+router.put('/:id', (req, res, next) => {
 	const id = req.params.id
 	const { name, isComplete } = req.body
 
@@ -76,29 +60,21 @@ router.put('/:id', (req, res) => {
 		completeAt: isComplete === 'completed' ? new Date() : null
 	}, { where: { id } })
 		.then(()=> {
-			req.flash('success', '更新成功!')
+			req.flash('success_msg', '更新成功!')
 			res.redirect(`/todos/${id}`)
 		})
-		.catch((err) => {
-			console.log(err)
-			req.flash('error', '處理失敗')
-			res.redirect('back')
-		})
+        .catch(next)
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req, res, next) => {
 	const id = req.params.id
 
 	return Todo.destroy({ where: { id } })
 		.then(() => {
-			req.flash('success', '刪除成功!')
+			req.flash('success_msg', '刪除成功!')
 			res.redirect('/todos')
 		})
-		.catch((err) => {
-			console.log(err)
-			req.flash('error', '處理失敗')
-			res.redirect('back')
-		})
+        .catch(next)
 })
 
 module.exports = router

@@ -8,6 +8,9 @@ const methodOverride = require('method-override')
 
 const routes = require('./routes')
 
+const errorHandler = require('./middlewares/error-handler')
+const messageHandler = require('./middlewares/flash-message-handler')
+
 const port = 3000
 
 app.engine('.hbs', engine({ extname: '.hbs' }));
@@ -22,9 +25,13 @@ app.use(session({
 	resave: false,
 	saveUninitialized: true
 }))
+
 app.use(flash())
+app.use(messageHandler)
 
 app.use(routes)
+
+app.use(errorHandler)
 
 app.listen(port, () => {
 	console.log(`App is running on http://localhost:${port}`)
