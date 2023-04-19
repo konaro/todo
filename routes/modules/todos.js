@@ -9,7 +9,7 @@ router.get('/', (req, res, next) => {
 		attributes: ['id', 'name', 'isComplete'],
 		raw: true
 	})
-		.then((todos) => res.render('todos', { todos }))
+		.then((todos) => res.render('todos', { todos: todos.slice(0, 5000) }))
         .catch(next)
 })
 
