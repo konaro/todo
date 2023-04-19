@@ -8,15 +8,16 @@ const limit = 10
 
 router.get('/', (req, res, next) => {
 	const page = parseInt(req.query.page) || 1
-	const begin = (page - 1) * limit
-	const end = page * limit
+	const offset = (page - 1) * limit
 
 	return Todo.findAll({
 		attributes: ['id', 'name', 'isComplete'],
-		raw: true
+		raw: true,
+		offset,
+		limit
 	})
 		.then((todos) => res.render('todos', {
-			todos: todos.slice(begin, end),
+			todos: todos,
 			page,
 			next: page + 1,
 			prev: page > 1 ? page - 1 : page
